@@ -293,11 +293,16 @@ body {
 
 .cart-item-info h4 {
   margin-bottom: 0.25rem;
+  color: #000;
+}
+
+.cart-item-info {
+  color: #000;
 }
 
 .cart-item-price {
   font-weight: 600;
-  color: #2d5a4a;
+  color: #000;
 }
 
 .quantity-controls {

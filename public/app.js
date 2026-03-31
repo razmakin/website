@@ -206,6 +206,7 @@ function updateCartUI() {
   const total = cart.reduce((sum, item) => sum + ((item.productId?.price || item.productPrice) * item.quantity), 0);
   cartTotal.textContent = total.toFixed(2);
   checkoutBtn.style.display = 'block';
+  updateCartCount();
 }
 
 window.updateQuantity = (index, change) => {
