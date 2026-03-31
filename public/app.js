@@ -291,6 +291,7 @@ function setupEventListeners() {
         orderStatus.textContent = `Order #${data.orderId} placed successfully!`;
         orderStatus.style.color = 'green';
         cart = [];
+        localStorage.removeItem('staticCart');
         updateCartUI();
         setTimeout(() => {
           document.getElementById('checkoutModal').style.display = 'none';

@@ -2,6 +2,7 @@ require('dotenv').config();
 const express = require('express');
 const mongoose = require('mongoose');
 const session = require('express-session');
+const MongoStore = require('connect-mongo');
 const cors = require('cors');
 const path = require('path');
 
@@ -21,10 +22,14 @@ app.use(cors({
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 app.use(express.static(path.join(__dirname, 'public')));
+
+// Configure session with MongoDB store
+const mongoUrl = process.env.MONGODB_URI || 'mongodb://localhost:27017/lawnmowerdb';
 app.use(session({
   secret: process.env.SESSION_SECRET || 'dev-secret',
   resave: false,
   saveUninitialized: false,
+  store: new MongoStore({ mongoUrl }),
   cookie: { secure: false }
 }));
 
