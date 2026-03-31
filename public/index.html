@@ -1,0 +1,83 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>LawnMaster Pro - Premium Lawnmowers</title>
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+  <header>
+    <nav class="navbar">
+      <div class="nav-container">
+        <div class="logo">
+          <h2>🌱 LawnMaster Pro</h2>
+        </div>
+        <div class="nav-menu">
+          <button id="loginBtn" class="btn btn-secondary">Login / Register</button>
+          <div id="cartBtn" class="btn btn-primary">🛒 Cart (0)</div>
+        </div>
+      </div>
+    </nav>
+  </header>
+
+  <main>
+    <!-- Login/Register Modal -->
+    <div id="authModal" class="modal">
+      <div class="modal-content">
+        <span class="close">&times;</span>
+        <div id="loginForm">
+          <h3>Login</h3>
+          <form>
+            <input type="email" id="loginEmail" placeholder="Email" required>
+            <input type="password" id="loginPassword" placeholder="Password" required>
+            <button type="submit" class="btn btn-primary">Login</button>
+          </form>
+          <p>Don't have an account? <a href="#" id="showRegister">Register here</a></p>
+        </div>
+        <div id="registerForm" style="display: none;">
+          <h3>Register</h3>
+          <form>
+            <input type="text" id="regUsername" placeholder="Username" required>
+            <input type="email" id="regEmail" placeholder="Email" required>
+            <input type="password" id="regPassword" placeholder="Password" required>
+            <button type="submit" class="btn btn-primary">Register</button>
+          </form>
+          <p>Have an account? <a href="#" id="showLogin">Login here</a></p>
+        </div>
+      </div>
+    </div>
+
+    <!-- Products Grid -->
+    <section class="products-section">
+      <div class="container">
+        <h1>Premium Lawnmowers</h1>
+        <p class="subtitle">Choose the perfect mower for your lawn</p>
+        <div id="productsGrid" class="products-grid">
+          <!-- Products will be injected here -->
+        </div>
+      </div>
+    </section>
+
+    <!-- Cart Sidebar -->
+    <div id="cartSidebar" class="cart-sidebar">
+      <div class="cart-header">
+        <h3>Shopping Cart</h3>
+        <span class="close-cart">&times;</span>
+      </div>
+      <div id="cartItems" class="cart-items">
+        <!-- Cart items will be injected here -->
+      </div>
+      <div class="cart-footer">
+        <div class="cart-total">
+          <strong>Total: $<span id="cartTotal">0.00</span></strong>
+        </div>
+        <button id="checkoutBtn" class="btn btn-success" style="display: none;">Checkout</button>
+      </div>
+    </div>
+  </main>
+
+  <script src="app.js"></script>
+</body>
+</html>
+
