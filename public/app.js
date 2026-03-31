@@ -36,7 +36,7 @@ async function loadProducts() {
         type: 'Push Mower',
         price: 299.99,
         description: '• Eco-friendly battery-powered\n• 21" steel deck\n• 4.0Ah battery\n• 45 min runtime',
-        imageUrl: 'https://images.unsplash.com/photo-1585320806297-9794b3e4eeae?w=400&h=300&fit=crop'
+        imageUrl: '/images/products/greenworks.jpeg'
       },
       {
         id: '2',
@@ -44,7 +44,7 @@ async function loadProducts() {
         type: 'Riding Mower',
         price: 4299.99,
         description: '• 42" Accel Deep deck\n• 22HP V-Twin engine\n• Power steering\n• MulchControl system',
-        imageUrl: 'https://images.unsplash.com/photo-1586952575587-8108bbff9b98?w=400&h=300&fit=crop'
+        imageUrl: '/images/products/john-deere.jpeg'
       },
       {
         id: '3',
@@ -52,7 +52,7 @@ async function loadProducts() {
         type: 'Robotic Mower',
         price: 3499.99,
         description: '• GPS navigation\n• App control\n• 1.25 acres coverage\n• Weather timer',
-        imageUrl: 'https://images.unsplash.com/photo-1627322705593-e3c82f4969ec?w=400&h=300&fit=crop'
+        imageUrl: '/images/products/husqvarna.jpeg'
       },
       {
         id: '4',
@@ -60,7 +60,7 @@ async function loadProducts() {
         type: 'Self-Propelled',
         price: 699.99,
         description: '• 56V ARC Lithium battery\n• Touch Drive\n• LED lights\n• 7.5Ah battery',
-        imageUrl: 'https://images.unsplash.com/photo-1585320806297-9794b3e4eeae?w=400&h=300&fit=crop'
+        imageUrl: '/images/products/ego.jpeg'
       },
       {
         id: '5',
@@ -68,7 +68,7 @@ async function loadProducts() {
         type: 'Gas Mower',
         price: 499.99,
         description: '• 163cc engine\n• Personal Pace\n• Bag/ Mulch\n• SmartStow storage',
-        imageUrl: 'https://images.unsplash.com/photo-1586952575587-8108bbff9b98?w=400&h=300&fit=crop'
+        imageUrl: '/images/products/toro.jpeg'
       },
       {
         id: '6',
@@ -76,7 +76,7 @@ async function loadProducts() {
         type: 'Cordless Mower',
         price: 599.99,
         description: '• 40V HP battery\n• 6.0Ah battery\n• Cut, mulch, bag\n• 75 min runtime',
-        imageUrl: 'https://images.unsplash.com/photo-1627322705593-e3c82f4969ec?w=400&h=300&fit=crop'
+        imageUrl: '/images/products/ryobi.jpeg'
       }
     ];
     renderProducts(dummyProducts);
@@ -95,7 +95,8 @@ function renderProducts(products) {
         <button class="btn btn-primary add-to-cart" 
                 data-product-id="${product.id}"
                 data-product-name="${product.name}"
-                data-product-price="${product.price}">
+                data-product-price="${product.price}"
+                data-image-url="${product.imageUrl}">
           🛒 Add to Cart
         </button>
       </div>
@@ -150,6 +151,7 @@ function handleAddToCartStatic(e) {
   const productId = e.target.dataset.productId;
   const productName = e.target.dataset.productName;
   const productPrice = parseFloat(e.target.dataset.productPrice);
+  const imageUrl = e.target.dataset.imageUrl;
   const btn = e.target;
   
   btn.disabled = true;
@@ -163,7 +165,8 @@ function handleAddToCartStatic(e) {
     cart.push({ 
       productId, 
       productName, 
-      productPrice, 
+      productPrice,
+      imageUrl,
       quantity: 1 
     });
   }
@@ -193,10 +196,10 @@ function updateCartUI() {
   
   cartItems.innerHTML = cart.map((item, index) => `
     <div class="cart-item">
-      <img src="${item.productId?.imageUrl || 'https://via.placeholder.com/60x60/1a3c34/fff?text=🛒'}" alt="${item.productId?.name || item.productName}">
+      <img src="${item.imageUrl || 'https://via.placeholder.com/60x60/1a3c34/fff?text=🛒'}" alt="${item.productName}" style="width: 60px; height: 60px; object-fit: cover; border-radius: 8px;">
       <div class="cart-item-info">
-        <h4>${item.productId?.name || item.productName}</h4>
-        <div class="cart-item-price">$${item.productId?.price?.toFixed(2) || item.productPrice.toFixed(2)}</div>
+        <h4>${item.productName}</h4>
+        <div class="cart-item-price">$${item.productPrice.toFixed(2)}</div>
         <div class="quantity-controls">
           <button class="quantity-btn" onclick="updateQuantity(${index}, -1)">-</button>
           <span>${item.quantity}</span>
@@ -206,7 +209,7 @@ function updateCartUI() {
     </div>
   `).join('');
   
-  const total = cart.reduce((sum, item) => sum + ((item.productId?.price || item.productPrice) * item.quantity), 0);
+  const total = cart.reduce((sum, item) => sum + (item.productPrice * item.quantity), 0);
   cartTotal.textContent = total.toFixed(2);
   checkoutBtn.style.display = 'block';
 }
