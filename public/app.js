@@ -35,54 +35,112 @@ async function checkAuth() {
 }
 
 async function loadProducts() {
+  productsGrid.innerHTML = '<div class="loading"></div>';
+  
   try {
-    productsGrid.innerHTML = '<div class="loading" style="grid-column: 1/-1; justify-self: center; align-self: center;"></div>';
     const response = await fetch('/api/products');
+    if (!response.ok) throw new Error('API failed');
     const products = await response.json();
-    
-    productsGrid.innerHTML = products.map(product => `
-      <div class="product-card">
-        <img src="${product.imageUrl}" alt="${product.name}" class="product-image">
-        <div class="product-info">
-          <div class="product-type">${product.type}</div>
-          <h3 class="product-name">${product.name}</h3>
-          <div class="product-price">$${product.price.toFixed(2)}</div>
-          <p class="product-description">${product.description}</p>
-          <button class="btn btn-primary add-to-cart" 
-                  data-product-id="${product._id}"
-                  ${!currentUser ? 'disabled' : ''}>
-            ${currentUser ? '🛒 Add to Cart' : 'Login to Buy'}
-          </button>
-        </div>
-      </div>
-    `).join('');
-    
-    // Re-attach event listeners
-    document.querySelectorAll('.add-to-cart').forEach(btn => {
-      btn.addEventListener('click', handleAddToCart);
-    });
+    renderProducts(products);
   } catch (err) {
-    productsGrid.innerHTML = '<p>Error loading products. Please refresh.</p>';
-    console.error('Load products failed:', err);
+    console.log('API failed, using dummy products:', err);
+    const dummyProducts = [
+      {
+        id: '1',
+        name: 'GreenWorks 21" Push Mower',
+        type: 'Push Mower',
+        price: 299.99,
+        description: '• Eco-friendly battery-powered\n• 21" steel deck\n• 4.0Ah battery\n• 45 min runtime',
+        imageUrl: 'https://via.placeholder.com/400x300/1a3c34/ffffff?text=GreenWorks+Push'
+      },
+      {
+        id: '2',
+        name: 'John Deere X380 Riding',
+        type: 'Riding Mower',
+        price: 4299.99,
+        description: '• 42" Accel Deep deck\n• 22HP V-Twin engine\n• Power steering\n• MulchControl system',
+        imageUrl: 'https://via.placeholder.com/400x300/2d5a4a/ffffff?text=John+Deere+X380'
+      },
+      {
+        id: '3',
+        name: 'Husqvarna Automower 450XH',
+        type: 'Robotic Mower',
+        price: 3499.99,
+        description: '• GPS navigation\n• App control\n• 1.25 acres coverage\n• Weather timer',
+        imageUrl: 'https://via.placeholder.com/400x300/1a3c34/ffffff?text=Husqvarna+450XH'
+      },
+      {
+        id: '4',
+        name: 'EGO 56V 21" Self-Propelled',
+        type: 'Self-Propelled',
+        price: 699.99,
+        description: '• 56V ARC Lithium battery\n• Touch Drive\n• LED lights\n• 7.5Ah battery',
+        imageUrl: 'https://via.placeholder.com/400x300/2d5a4a/ffffff?text=EGO+Self-Propelled'
+      },
+      {
+        id: '5',
+        name: 'Toro Recycler 22" Gas',
+        type: 'Gas Mower',
+        price: 499.99,
+        description: '• 163cc engine\n• Personal Pace\n• Bag/ Mulch\n• SmartStow storage',
+        imageUrl: 'https://via.placeholder.com/400x300/1a3c34/ffffff?text=Toro+Recycler'
+      },
+      {
+        id: '6',
+        name: 'Ryobi 40V HP Brushless',
+        type: 'Cordless Mower',
+        price: 599.99,
+        description: '• 40V HP battery\n• 6.0Ah battery\n• Cut, mulch, bag\n• 75 min runtime',
+        imageUrl: 'https://via.placeholder.com/400x300/2d5a4a/ffffff?text=Ryobi+40V'
+      }
+    ];
+    renderProducts(dummyProducts);
   }
 }
 
-async function loadCart() {
-  if (!currentUser) {
-    cart = [];
-    updateCartUI();
-    return;
-  }
+function renderProducts(products) {
+  productsGrid.innerHTML = products.map(product => `
+    <div class="product-card">
+      <img src="${product.imageUrl}" alt="${product.name}" class="product-image">
+      <div class="product-info">
+        <div class="product-type">${product.type}</div>
+        <h3 class="product-name">${product.name}</h3>
+        <div class="product-price">$${product.price.toFixed(2)}</div>
+        <p class="product-description">${product.description}</p>
+        <button class="btn btn-primary add-to-cart" 
+                data-product-id="${product.id}"
+                data-product-name="${product.name}"
+                data-product-price="${product.price}">
+          🛒 Add to Cart
+        </button>
+      </div>
+    </div>
+  `).join('');
   
+  document.querySelectorAll('.add-to-cart').forEach(btn => {
+    btn.addEventListener('click', handleAddToCartStatic);
+  });
+}
+
+async function loadCart() {
+  // Try backend first
   try {
-    const response = await fetch('/api/cart');
-    const data = await response.json();
-    cart = data.cart || [];
-    updateCartUI();
-    updateCartCount();
+    if (currentUser) {
+      const response = await fetch('/api/cart');
+      const data = await response.json();
+      cart = data.cart || [];
+    } else {
+      // Load from localStorage for static mode
+      const saved = localStorage.getItem('staticCart');
+      cart = saved ? JSON.parse(saved) : [];
+    }
   } catch (err) {
-    console.error('Load cart failed:', err);
+    console.log('Backend cart failed, using localStorage');
+    const saved = localStorage.getItem('staticCart');
+    cart = saved ? JSON.parse(saved) : [];
   }
+  updateCartUI();
+  updateCartCount();
 }
 
 async function handleAddToCart(e) {
@@ -116,7 +174,41 @@ async function handleAddToCart(e) {
   }
 }
 
+function handleAddToCartStatic(e) {
+  const productId = e.target.dataset.productId;
+  const productName = e.target.dataset.productName;
+  const productPrice = parseFloat(e.target.dataset.productPrice);
+  const btn = e.target;
+  
+  btn.disabled = true;
+  btn.textContent = 'Added! ✓';
+  
+  // Add to local cart
+  const existing = cart.find(item => item.productId === productId);
+  if (existing) {
+    existing.quantity += 1;
+  } else {
+    cart.push({ 
+      productId, 
+      productName, 
+      productPrice, 
+      quantity: 1 
+    });
+  }
+  
+  updateCartUI();
+  updateCartCount();
+  
+  setTimeout(() => {
+    btn.textContent = '🛒 Add to Cart';
+    btn.disabled = false;
+  }, 2000);
+}
+
 function updateCartUI() {
+  // Save to localStorage for static mode
+  localStorage.setItem('staticCart', JSON.stringify(cart));
+  
   if (cart.length === 0) {
     cartItems.innerHTML = '<p style="text-align: center; color: #666; padding: 2rem;">Your cart is empty</p>';
     checkoutBtn.style.display = 'none';
@@ -126,10 +218,10 @@ function updateCartUI() {
   
   cartItems.innerHTML = cart.map((item, index) => `
     <div class="cart-item">
-      <img src="${item.productId.imageUrl}" alt="${item.productId.name}">
+      <img src="${item.productId?.imageUrl || 'https://via.placeholder.com/60x60/1a3c34/fff?text=🛒'}" alt="${item.productId?.name || item.productName}">
       <div class="cart-item-info">
-        <h4>${item.productId.name}</h4>
-        <div class="cart-item-price">$${item.productId.price.toFixed(2)}</div>
+        <h4>${item.productId?.name || item.productName}</h4>
+        <div class="cart-item-price">$${item.productId?.price?.toFixed(2) || item.productPrice.toFixed(2)}</div>
         <div class="quantity-controls">
           <button class="quantity-btn" onclick="updateQuantity(${index}, -1)">-</button>
           <span>${item.quantity}</span>
@@ -139,7 +231,7 @@ function updateCartUI() {
     </div>
   `).join('');
   
-  const total = cart.reduce((sum, item) => sum + (item.productId.price * item.quantity), 0);
+  const total = cart.reduce((sum, item) => sum + ((item.productId?.price || item.productPrice) * item.quantity), 0);
   cartTotal.textContent = total.toFixed(2);
   checkoutBtn.style.display = 'block';
 }
