@@ -3,7 +3,7 @@ let currentUser = null;
 let cart = [];
 
 // DOM elements
-const loginBtn = document.getElementById('loginBtn');
+// No loginBtn needed
 const cartBtn = document.getElementById('cartBtn');
 const authModal = document.getElementById('authModal');
 const cartSidebar = document.getElementById('cartSidebar');
@@ -21,18 +21,8 @@ document.addEventListener('DOMContentLoaded', async () => {
   setupEventListeners();
 });
 
-async function checkAuth() {
-  try {
-    const response = await fetch('/api/user');
-    const data = await response.json();
-    if (data.loggedIn) {
-      currentUser = data;
-      updateUIForAuth();
-    }
-  } catch (err) {
-    console.error('Auth check failed:', err);
-  }
-}
+// No auth needed - guest checkout only
+let currentUser = null; // Always guest
 
 async function loadProducts() {
   productsGrid.innerHTML = '<div class="loading"></div>';
@@ -247,12 +237,10 @@ function updateCartCount() {
   cartBtn.textContent = `🛒 Cart (${count})`;
 }
 
-function updateUIForAuth() {
-  loginBtn.textContent = `Welcome, ${currentUser.username}`;
-  loginBtn.className = 'btn btn-secondary';
+// No auth UI
+function enableCartButtons() {
   document.querySelectorAll('.add-to-cart').forEach(btn => {
     btn.disabled = false;
-    btn.textContent = '🛒 Add to Cart';
   });
 }
 

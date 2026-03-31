@@ -8,6 +8,7 @@ const path = require('path');
 const User = require('./models/User');
 const Product = require('./models/Product');
 const Cart = require('./models/Cart');
+const Order = require('./models/Order');
 
 const app = express();
 const PORT = process.env.PORT || 3000;
@@ -150,6 +151,26 @@ app.get('/api/cart', async (req, res) => {
     
     const cart = await Cart.findOne({ userId: req.session.userId }).populate('products.productId');
     res.json({ cart: cart ? cart.products : [] });
+  } catch (err) {
+    res.status(500).json({ error: err.message });
+  }
+});
+
+// Create guest order
+app.post('/api/orders', async (req, res) => {
+  try {
+    const { customerName, customerEmail, items, total } = req.body;
+    
+    const order = new Order({
+      customerName,
+      customerEmail,
+      items: JSON.parse(items),
+      total: parseFloat(total)
+    });
+    
+    await order.save();
+    
+    res.json({ success: true, orderId: order._id });
   } catch (err) {
     res.status(500).json({ error: err.message });
   }

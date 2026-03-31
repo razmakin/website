@@ -14,7 +14,6 @@
           <h2>🌱 LawnMaster Pro</h2>
         </div>
         <div class="nav-menu">
-          <button id="loginBtn" class="btn btn-secondary">Login / Register</button>
           <div id="cartBtn" class="btn btn-primary">🛒 Cart (0)</div>
         </div>
       </div>
@@ -22,29 +21,17 @@
   </header>
 
   <main>
-    <!-- Login/Register Modal -->
-    <div id="authModal" class="modal">
+    <!-- Checkout Modal (Guest) -->
+    <div id="checkoutModal" class="modal">
       <div class="modal-content">
-        <span class="close">&times;</span>
-        <div id="loginForm">
-          <h3>Login</h3>
-          <form>
-            <input type="email" id="loginEmail" placeholder="Email" required>
-            <input type="password" id="loginPassword" placeholder="Password" required>
-            <button type="submit" class="btn btn-primary">Login</button>
-          </form>
-          <p>Don't have an account? <a href="#" id="showRegister">Register here</a></p>
-        </div>
-        <div id="registerForm" style="display: none;">
-          <h3>Register</h3>
-          <form>
-            <input type="text" id="regUsername" placeholder="Username" required>
-            <input type="email" id="regEmail" placeholder="Email" required>
-            <input type="password" id="regPassword" placeholder="Password" required>
-            <button type="submit" class="btn btn-primary">Register</button>
-          </form>
-          <p>Have an account? <a href="#" id="showLogin">Login here</a></p>
-        </div>
+        <span class="close-checkout">&times;</span>
+        <h3>Checkout</h3>
+        <form id="checkoutForm">
+          <input type="text" id="customerName" placeholder="Full Name" required>
+          <input type="email" id="customerEmail" placeholder="Email" required>
+          <button type="submit" class="btn btn-success" id="submitOrder">Place Order</button>
+        </form>
+        <p id="orderStatus"></p>
       </div>
     </div>
 
