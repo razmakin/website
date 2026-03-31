@@ -36,7 +36,7 @@ async function loadProducts() {
         type: 'Push Mower',
         price: 299.99,
         description: '• Eco-friendly battery-powered\n• 21" steel deck\n• 4.0Ah battery\n• 45 min runtime',
-        imageUrl: '/images/products/greenworks.jpg'
+        imageUrl: 'https://images.unsplash.com/photo-1585320806297-9794b3e4eeae?w=400&h=300&fit=crop'
       },
       {
         id: '2',
@@ -44,7 +44,7 @@ async function loadProducts() {
         type: 'Riding Mower',
         price: 4299.99,
         description: '• 42" Accel Deep deck\n• 22HP V-Twin engine\n• Power steering\n• MulchControl system',
-        imageUrl: '/images/products/john-deere.jpg'
+        imageUrl: 'https://images.unsplash.com/photo-1586952575587-8108bbff9b98?w=400&h=300&fit=crop'
       },
       {
         id: '3',
@@ -52,7 +52,7 @@ async function loadProducts() {
         type: 'Robotic Mower',
         price: 3499.99,
         description: '• GPS navigation\n• App control\n• 1.25 acres coverage\n• Weather timer',
-        imageUrl: '/images/products/husqvarna.jpg'
+        imageUrl: 'https://images.unsplash.com/photo-1627322705593-e3c82f4969ec?w=400&h=300&fit=crop'
       },
       {
         id: '4',
@@ -60,7 +60,7 @@ async function loadProducts() {
         type: 'Self-Propelled',
         price: 699.99,
         description: '• 56V ARC Lithium battery\n• Touch Drive\n• LED lights\n• 7.5Ah battery',
-        imageUrl: '/images/products/ego.jpg'
+        imageUrl: 'https://images.unsplash.com/photo-1585320806297-9794b3e4eeae?w=400&h=300&fit=crop'
       },
       {
         id: '5',
@@ -68,7 +68,7 @@ async function loadProducts() {
         type: 'Gas Mower',
         price: 499.99,
         description: '• 163cc engine\n• Personal Pace\n• Bag/ Mulch\n• SmartStow storage',
-        imageUrl: '/images/products/toro.jpg'
+        imageUrl: 'https://images.unsplash.com/photo-1586952575587-8108bbff9b98?w=400&h=300&fit=crop'
       },
       {
         id: '6',
@@ -76,7 +76,7 @@ async function loadProducts() {
         type: 'Cordless Mower',
         price: 599.99,
         description: '• 40V HP battery\n• 6.0Ah battery\n• Cut, mulch, bag\n• 75 min runtime',
-        imageUrl: '/images/products/ryobi.jpg'
+        imageUrl: 'https://images.unsplash.com/photo-1627322705593-e3c82f4969ec?w=400&h=300&fit=crop'
       }
     ];
     renderProducts(dummyProducts);
@@ -86,7 +86,7 @@ async function loadProducts() {
 function renderProducts(products) {
   productsGrid.innerHTML = products.map(product => `
     <div class="product-card">
-      <div class="product-no-image"></div>
+      <img src="${product.imageUrl}" alt="${product.name}" class="product-image">
       <div class="product-info">
         <div class="product-type">${product.type}</div>
         <h3 class="product-name">${product.name}</h3>
