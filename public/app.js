@@ -36,7 +36,7 @@ async function loadProducts() {
         type: 'Push Mower',
         price: 299.99,
         description: '• Eco-friendly battery-powered\n• 21" steel deck\n• 4.0Ah battery\n• 45 min runtime',
-        imageUrl: 'https://via.placeholder.com/400x300/1a3c34/ffffff?text=GreenWorks+Push'
+        imageUrl: '/images/products/greenworks.jpg'
       },
       {
         id: '2',
@@ -44,7 +44,7 @@ async function loadProducts() {
         type: 'Riding Mower',
         price: 4299.99,
         description: '• 42" Accel Deep deck\n• 22HP V-Twin engine\n• Power steering\n• MulchControl system',
-        imageUrl: 'https://via.placeholder.com/400x300/2d5a4a/ffffff?text=John+Deere+X380'
+        imageUrl: '/images/products/john-deere.jpg'
       },
       {
         id: '3',
@@ -52,7 +52,7 @@ async function loadProducts() {
         type: 'Robotic Mower',
         price: 3499.99,
         description: '• GPS navigation\n• App control\n• 1.25 acres coverage\n• Weather timer',
-        imageUrl: 'https://via.placeholder.com/400x300/1a3c34/ffffff?text=Husqvarna+450XH'
+        imageUrl: '/images/products/husqvarna.jpg'
       },
       {
         id: '4',
@@ -60,7 +60,7 @@ async function loadProducts() {
         type: 'Self-Propelled',
         price: 699.99,
         description: '• 56V ARC Lithium battery\n• Touch Drive\n• LED lights\n• 7.5Ah battery',
-        imageUrl: 'https://via.placeholder.com/400x300/2d5a4a/ffffff?text=EGO+Self-Propelled'
+        imageUrl: '/images/products/ego.jpg'
       },
       {
         id: '5',
@@ -68,7 +68,7 @@ async function loadProducts() {
         type: 'Gas Mower',
         price: 499.99,
         description: '• 163cc engine\n• Personal Pace\n• Bag/ Mulch\n• SmartStow storage',
-        imageUrl: 'https://via.placeholder.com/400x300/1a3c34/ffffff?text=Toro+Recycler'
+        imageUrl: '/images/products/toro.jpg'
       },
       {
         id: '6',
@@ -76,7 +76,7 @@ async function loadProducts() {
         type: 'Cordless Mower',
         price: 599.99,
         description: '• 40V HP battery\n• 6.0Ah battery\n• Cut, mulch, bag\n• 75 min runtime',
-        imageUrl: 'https://via.placeholder.com/400x300/2d5a4a/ffffff?text=Ryobi+40V'
+        imageUrl: '/images/products/ryobi.jpg'
       }
     ];
     renderProducts(dummyProducts);
