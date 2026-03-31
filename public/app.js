@@ -14,27 +14,22 @@ const checkoutBtn = document.getElementById('checkoutBtn');
 
 // Initialize app
 document.addEventListener('DOMContentLoaded', async () => {
-  await checkAuth();
-  await loadProducts();
-  await loadCart();
-  
+  loadProducts();
+  loadCart();
+  enableCartButtons(); // Enable add to cart
   setupEventListeners();
 });
 
+// Guest checkout only - no auth
+currentUser = null;
+
 // No auth needed - guest checkout only
-let currentUser = null; // Always guest
 
 async function loadProducts() {
   productsGrid.innerHTML = '<div class="loading"></div>';
   
-  try {
-    const response = await fetch('/api/products');
-    if (!response.ok) throw new Error('API failed');
-    const products = await response.json();
-    renderProducts(products);
-  } catch (err) {
-    console.log('API failed, using dummy products:', err);
-    const dummyProducts = [
+  // Use dummy products directly - no API call
+  const dummyProducts = [
       {
         id: '1',
         name: 'GreenWorks 21" Push Mower',
@@ -86,12 +81,12 @@ async function loadProducts() {
     ];
     renderProducts(dummyProducts);
   }
-}
+
 
 function renderProducts(products) {
   productsGrid.innerHTML = products.map(product => `
     <div class="product-card">
-      <img src="${product.imageUrl}" alt="${product.name}" class="product-image">
+      <div class="product-no-image"></div>
       <div class="product-info">
         <div class="product-type">${product.type}</div>
         <h3 class="product-name">${product.name}</h3>
@@ -113,22 +108,9 @@ function renderProducts(products) {
 }
 
 async function loadCart() {
-  // Try backend first
-  try {
-    if (currentUser) {
-      const response = await fetch('/api/cart');
-      const data = await response.json();
-      cart = data.cart || [];
-    } else {
-      // Load from localStorage for static mode
-      const saved = localStorage.getItem('staticCart');
-      cart = saved ? JSON.parse(saved) : [];
-    }
-  } catch (err) {
-    console.log('Backend cart failed, using localStorage');
-    const saved = localStorage.getItem('staticCart');
-    cart = saved ? JSON.parse(saved) : [];
-  }
+  // LocalStorage cart (guest mode)
+  const saved = localStorage.getItem('staticCart');
+  cart = saved ? JSON.parse(saved) : [];
   updateCartUI();
   updateCartCount();
 }
@@ -244,24 +226,8 @@ function enableCartButtons() {
   });
 }
 
-// Event Listeners
+// Event Listeners - Guest Checkout
 function setupEventListeners() {
-  // Auth modal
-  loginBtn.addEventListener('click', () => {
-    authModal.style.display = 'block';
-  });
-  
-  // Close modal
-  document.querySelector('.close').addEventListener('click', () => {
-    authModal.style.display = 'none';
-  });
-  
-  window.addEventListener('click', (e) => {
-    if (e.target === authModal) {
-      authModal.style.display = 'none';
-    }
-  });
-  
   // Cart toggle
   cartBtn.addEventListener('click', () => {
     cartSidebar.classList.toggle('open');
@@ -271,77 +237,66 @@ function setupEventListeners() {
     cartSidebar.classList.remove('open');
   });
   
-  // Login form
-  document.getElementById('loginForm').querySelector('form').addEventListener('submit', async (e) => {
-    e.preventDefault();
-    const email = document.getElementById('loginEmail').value;
-    const password = document.getElementById('loginPassword').value;
-    
-    try {
-      const response = await fetch('/api/login', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ email, password })
-      });
-      
-      const data = await response.json();
-      if (data.success) {
-        currentUser = data.user;
-        updateUIForAuth();
-        authModal.style.display = 'none';
-        await loadCart();
-      } else {
-        alert(data.error || 'Login failed');
-      }
-    } catch (err) {
-      alert('Login error');
-    }
-  });
-  
-  // Register form
-  document.getElementById('registerForm').querySelector('form').addEventListener('submit', async (e) => {
-    e.preventDefault();
-    const username = document.getElementById('regUsername').value;
-    const email = document.getElementById('regEmail').value;
-    const password = document.getElementById('regPassword').value;
-    
-    try {
-      const response = await fetch('/api/register', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ username, email, password })
-      });
-      
-      const data = await response.json();
-      if (data.success) {
-        currentUser = data.user;
-        updateUIForAuth();
-        authModal.style.display = 'none';
-        await loadCart();
-      } else {
-        alert(data.error || 'Registration failed');
-      }
-    } catch (err) {
-      alert('Registration error');
-    }
-  });
-  
-  // Form toggle
-  document.getElementById('showRegister').addEventListener('click', (e) => {
-    e.preventDefault();
-    document.getElementById('loginForm').style.display = 'none';
-    document.getElementById('registerForm').style.display = 'block';
-  });
-  
-  document.getElementById('showLogin').addEventListener('click', (e) => {
-    e.preventDefault();
-    document.getElementById('loginForm').style.display = 'block';
-    document.getElementById('registerForm').style.display = 'none';
-  });
-  
-  // Checkout (placeholder)
+  // Checkout
   checkoutBtn.addEventListener('click', () => {
-    alert('Checkout functionality coming soon!');
+    document.getElementById('checkoutModal').style.display = 'block';
+  });
+  
+  // Close checkout modal
+  document.querySelector('.close-checkout').addEventListener('click', () => {
+    document.getElementById('checkoutModal').style.display = 'none';
+  });
+  
+  window.addEventListener('click', (e) => {
+    const checkoutModal = document.getElementById('checkoutModal');
+    if (e.target === checkoutModal) {
+      checkoutModal.style.display = 'none';
+    }
+  });
+  
+  // Checkout form
+  document.getElementById('checkoutForm').addEventListener('submit', async (e) => {
+    e.preventDefault();
+    
+    const customerName = document.getElementById('customerName').value;
+    const customerEmail = document.getElementById('customerEmail').value;
+    const submitBtn = document.getElementById('submitOrder');
+    const orderStatus = document.getElementById('orderStatus');
+    
+    submitBtn.disabled = true;
+    submitBtn.textContent = 'Processing...';
+    
+    try {
+      const response = await fetch('/api/orders', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          customerName,
+          customerEmail,
+          items: JSON.stringify(cart),
+          total: parseFloat(document.getElementById('cartTotal').textContent)
+        })
+      });
+      
+      const data = await response.json();
+      if (data.success) {
+        orderStatus.textContent = `Order #${data.orderId} placed successfully!`;
+        orderStatus.style.color = 'green';
+        cart = [];
+        updateCartUI();
+        setTimeout(() => {
+          document.getElementById('checkoutModal').style.display = 'none';
+        }, 3000);
+      } else {
+        throw new Error(data.error || 'Order failed');
+      }
+    } catch (err) {
+      orderStatus.textContent = 'Order failed. Please try again.';
+      orderStatus.style.color = 'red';
+    }
+    
+    submitBtn.disabled = false;
+    submitBtn.textContent = 'Place Order';
   });
 }
 
