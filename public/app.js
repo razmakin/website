@@ -267,13 +267,20 @@ function setupEventListeners() {
     submitBtn.textContent = 'Processing...';
     
     try {
+      // Transform cart items to match Order schema (price field, not productPrice)
+      const orderItems = cart.map(item => ({
+        productName: item.productName,
+        price: item.productPrice,
+        quantity: item.quantity
+      }));
+      
       const response = await fetch('/api/orders', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
           customerName,
           customerEmail,
-          items: JSON.stringify(cart),
+          items: orderItems,
           total: parseFloat(document.getElementById('cartTotal').textContent)
         })
       });
@@ -291,6 +298,7 @@ function setupEventListeners() {
         throw new Error(data.error || 'Order failed');
       }
     } catch (err) {
+      console.error('Order error:', err);
       orderStatus.textContent = 'Order failed. Please try again.';
       orderStatus.style.color = 'red';
     }

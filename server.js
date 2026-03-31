@@ -161,10 +161,15 @@ app.post('/api/orders', async (req, res) => {
   try {
     const { customerName, customerEmail, items, total } = req.body;
     
+    // Validate required fields
+    if (!customerName || !customerEmail || !items || !total) {
+      return res.status(400).json({ error: 'Missing required fields' });
+    }
+    
     const order = new Order({
       customerName,
       customerEmail,
-      items: JSON.parse(items),
+      items: Array.isArray(items) ? items : [],
       total: parseFloat(total)
     });
     
@@ -172,6 +177,7 @@ app.post('/api/orders', async (req, res) => {
     
     res.json({ success: true, orderId: order._id });
   } catch (err) {
+    console.error('Order error:', err);
     res.status(500).json({ error: err.message });
   }
 });
