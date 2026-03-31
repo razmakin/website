@@ -181,6 +181,9 @@ function updateCartUI() {
   // Save to localStorage for static mode
   localStorage.setItem('staticCart', JSON.stringify(cart));
   
+  // Update counter first (even if empty)
+  updateCartCount();
+  
   if (cart.length === 0) {
     cartItems.innerHTML = '<p style="text-align: center; color: #666; padding: 2rem;">Your cart is empty</p>';
     checkoutBtn.style.display = 'none';
@@ -206,7 +209,6 @@ function updateCartUI() {
   const total = cart.reduce((sum, item) => sum + ((item.productId?.price || item.productPrice) * item.quantity), 0);
   cartTotal.textContent = total.toFixed(2);
   checkoutBtn.style.display = 'block';
-  updateCartCount();
 }
 
 window.updateQuantity = (index, change) => {
